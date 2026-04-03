@@ -78,9 +78,8 @@ export async function sendNewIssueNotification(issue: NotionIssue) {
 }
 
 export async function sendCommentNotification(comment: NotionComment) {
-  const authorMention = getSlackMention(comment.authorId, comment.author);
+  const authorName = comment.author || "알 수 없음";
   const mentionTags = comment.mentionedUsers
-    .filter((u) => u.id !== comment.authorId)
     .map((u) => getSlackMention(u.id, u.name));
   const mentionText = mentionTags.length > 0 ? `*멘션*\n${mentionTags.join(" ")}` : "";
 
@@ -93,7 +92,7 @@ export async function sendCommentNotification(comment: NotionComment) {
       type: "section",
       fields: [
         { type: "mrkdwn", text: `*이슈*\n${comment.pageTitle}` },
-        { type: "mrkdwn", text: `*작성자*\n${authorMention}` },
+        { type: "mrkdwn", text: `*작성자*\n${authorName}` },
       ],
     },
     ...(mentionText ? [{ type: "section", text: { type: "mrkdwn", text: mentionText } }] : []),
