@@ -11,3 +11,30 @@ jobs:
     steps:
       - name: Call Vercel endpoint
         run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Wait 5 minutes
+        run: sleep 300
+      - name: Call again
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Wait 5 minutes again
+        run: sleep 300
+      - name: Call third time
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Wait 5 minutes final
+        run: sleep 300
+      - name: Call fourth time
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Wait 5 minutes
+        run: sleep 300
+      - name: Call fifth time
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Wait 5 minutes
+        run: sleep 300
+      - name: Call sixth time
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+      - name: Retrigger workflow
+        run: |
+          curl -s -X POST \
+            -H "Authorization:token ${{ secrets.GH_TOKEN }}" \
+            -H "Accept:application/vnd.github.v3+json" \
+            https://api.github.com/repos/shared-cmyk1/deeper-issue-bot/actions/workflows/check-notion.yml/dispatches \
+            -d '{"ref":"main"}'
