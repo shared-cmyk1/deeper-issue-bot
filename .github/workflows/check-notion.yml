@@ -1,19 +1,13 @@
 name: Check Notion
 
-  on:
-    schedule:
-      - cron: '*/5 * * * *'
-    workflow_dispatch:
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
-  jobs:
-    check:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Call Vercel
-  endpoint
-          run: |
-            curl -s -f -H
-  "Authorization: Bearer ${{
-  secrets.CRON_SECRET }}" \
-              "${{
-  secrets.VERCEL_ENDPOINT }}"
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Vercel endpoint
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
