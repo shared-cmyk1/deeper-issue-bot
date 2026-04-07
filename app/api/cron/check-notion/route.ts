@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
     const newIssues = await getNewIssues(since);
     const newIssueIds = new Set(newIssues.map((i) => i.id));
