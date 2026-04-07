@@ -14,7 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Call Vercel endpoint
-        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+        run: |
+          SINCE="${{ vars.LAST_CHECKED }}"
+          if [ -z "$SINCE" ]; then
+            SINCE=$(date -u -d '-15 minutes' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v-15M +%Y-%m-%dT%H:%M:%S.000Z)
+          fi
+          echo "Checking since: $SINCE"
+          RESULT=$(curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}?since=$SINCE")
+          echo "$RESULT"
+      - name: Update last checked time
+        if: success()
+        run: |
+          NOW=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+          gh variable set LAST_CHECKED --body "$NOW" --repo shared-cmyk1/deeper-issue-bot
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   daily-summary:
     runs-on: ubuntu-latest
