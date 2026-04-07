@@ -3,6 +3,9 @@ name: Check Notion
 on:
   schedule:
     - cron: '*/5 * * * *'
+    - cron: '0 0 * * *'
+    - cron: '0 4 * * *'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,3 +14,10 @@ jobs:
     steps:
       - name: Call Vercel endpoint
         run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}"
+
+  daily-summary:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 0 * * *' || github.event.schedule == '0 4 * * *' || github.event.schedule == '0 7 * * *'
+    steps:
+      - name: Call daily summary endpoint
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}/../daily-summary?hours=24"
