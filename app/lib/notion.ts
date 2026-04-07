@@ -125,9 +125,18 @@ export async function getRecentComments(since: string): Promise<NotionComment[]>
               id: t.mention.user.id,
               name: t.mention.user.name || t.plain_text || "알 수 없음",
             }));
+          let authorName = comment.created_by?.name || "";
+          if (!authorName && comment.created_by?.id) {
+            try {
+              const user = await notion.users.retrieve({ user_id: comment.created_by.id });
+              authorName = user.name || "알 수 없음";
+            } catch {
+              authorName = "알 수 없음";
+            }
+          }
           comments.push({
             id: comment.id,
-            author: comment.created_by?.name || "알 수 없음",
+            author: authorName || "알 수 없음",
             authorId: comment.created_by?.id || "",
             text,
             mentionedUsers,
