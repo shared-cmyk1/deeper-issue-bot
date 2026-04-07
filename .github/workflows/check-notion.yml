@@ -6,6 +6,7 @@ on:
     - cron: '0 0 * * *'
     - cron: '0 4 * * *'
     - cron: '0 7 * * *'
+    - cron: '0 10 * * *'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +18,7 @@ jobs:
 
   daily-summary:
     runs-on: ubuntu-latest
-    if: github.event.schedule == '0 0 * * *' || github.event.schedule == '0 4 * * *' || github.event.schedule == '0 7 * * *'
+    if: github.event.schedule == '0 0 * * *' || github.event.schedule == '0 4 * * *' || github.event.schedule == '0 7 * * *' || github.event.schedule == '0 10 * * *'
     steps:
       - name: Call daily summary endpoint
         run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "https://deeper-issue-bot.vercel.app/api/cron/daily-summary?hours=24"
