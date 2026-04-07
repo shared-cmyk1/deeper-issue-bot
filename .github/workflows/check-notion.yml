@@ -20,4 +20,4 @@ jobs:
     if: github.event.schedule == '0 0 * * *' || github.event.schedule == '0 4 * * *' || github.event.schedule == '0 7 * * *'
     steps:
       - name: Call daily summary endpoint
-        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "${{ secrets.VERCEL_ENDPOINT }}/../daily-summary?hours=24"
+        run: curl -s -f -H "Authorization:Bearer ${{ secrets.CRON_SECRET }}" "https://deeper-issue-bot.vercel.app/api/cron/daily-summary?hours=24"
