@@ -155,3 +155,64 @@ export async function sendUpdateNotification(issue: NotionIssue) {
     body: JSON.stringify({ blocks }),
   });
 }
+
+export async function sendDailySummary(
+  newIssues: NotionIssue[],
+  newComments: NotionComment[],
+  modifiedIssues: NotionIssue[],
+  hours: number,
+) {
+  const total = newIssues.length + newComments.length + modifiedIssues.length;
+
+  const blocks: any[] = [
+    {
+      type: "header",
+      text: { type: "plain_text", text: `:clipboard: 이슈 요약 (최근 ${hours}시간)`, emoji: true },
+    },
+  ];
+
+  if (total === 0) {
+    blocks.push({
+      type: "section",
+      text: { type: "mrkdwn", text: "새로운 이슈, 댓글, 업데이트가 없습니다." },
+    });
+  } else {
+    if (newIssues.length > 0) {
+      const issueLines = newIssues
+        .map((i) => `• ${getPriorityEmoji(i.priority)} <${i.url}|${i.title}> (${i.assignee || "미배정"})`)
+        .join("\n");
+      blocks.push({
+        type: "section",
+        text: { type: "mrkdwn", text: `*:memo: 새 이슈 (${newIssues.length}건)*\n${issueLines}` },
+      });
+    }
+
+    if (newComments.length > 0) {
+      const commentLines = newComments
+        .map((c) => `• <${c.pageUrl}|${c.pageTitle}> — ${c.author}: "${c.text.slice(0, 50)}${c.text.length > 50 ? "..." : ""}"`)
+        .join("\n");
+      blocks.push({
+        type: "section",
+        text: { type: "mrkdwn", text: `*:speech_balloon: 새 댓글 (${newComments.length}건)*\n${commentLines}` },
+      });
+    }
+
+    if (modifiedIssues.length > 0) {
+      const updateLines = modifiedIssues
+        .map((i) => `• <${i.url}|${i.title}> — ${i.status || "상태 없음"}`)
+        .join("\n");
+      blocks.push({
+        type: "section",
+        text: { type: "mrkdwn", text: `*:arrows_counterclockwise: 업데이트 (${modifiedIssues.length}건)*\n${updateLines}` },
+      });
+    }
+  }
+
+  blocks.push({ type: "divider" });
+
+  await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ blocks }),
+  });
+}
